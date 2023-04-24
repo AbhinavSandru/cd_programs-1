@@ -1,0 +1,52 @@
+# List of operators
+operators = ['+', '-', '*', '/', '(', ')', '^']
+
+# Dictionary for operator priorities
+priority = {'+':1, '-':1, '*':2, '/':2, '^':3}
+
+# Function to print three address code for an operation
+def printCode(st, output, no):
+    # Pop the top operator from stack
+    a = st.pop()
+    # Pop the top two operands from output queue
+    c1 = output.pop()
+    c2 = output.pop()
+    # Generate the three address code and append it to output queue
+    newVar = f't{no[0]}'
+    print(f"{newVar} = {c2} {a} {c1}")
+    output.append(newVar)
+    no[0] += 1
+
+# Function to generate three address code for an expression
+def threeAddressCode(exp):
+    # Initialize stack, output queue and counter
+    st = []
+    output = []
+    no = [1]
+    # Iterate over each character in the expression
+    for char in exp:
+        # If the character is an operand, append it to the output queue
+        if char not in operators:
+            output.append(char)
+        # If the character is '(', push it to the stack
+        elif char == '(':
+            st.append('(')
+        # If the character is ')', pop operators from stack and generate three address code until '(' is found
+        elif char == ')':
+            while st and st[-1]!= '(':
+                printCode(st, output, no)
+            st.pop()
+        # If the character is an operator, pop operators from stack and generate three address code until lower priority operator is found
+        else:
+            while len(st) > 0 and st[-1]!='(' and priority[char] <= priority[st[-1]]:
+                printCode(st, output, no)
+            st.append(char)
+    # Pop remaining operators from stack and generate three address code
+    while len(st) > 0:
+        printCode(st, output, no)
+
+# Take user input and generate three address code
+exp = input('Enter expression: ')
+print('Input:', exp)
+print('Three Address Code:')
+threeAddressCode(exp)
